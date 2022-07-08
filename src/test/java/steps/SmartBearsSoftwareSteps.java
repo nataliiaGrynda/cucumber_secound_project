@@ -12,6 +12,7 @@ import org.openqa.selenium.WebElement;
 import pages.ListOfAllOrdersPage;
 import pages.SmartBearSoftwareLogInPage;
 import utilities.Driver;
+import utilities.DropDownHandler;
 import utilities.Waiter;
 
 import java.util.List;
@@ -91,6 +92,8 @@ public class SmartBearsSoftwareSteps {
     case "unchecked":
       listOfAllOrdersPage.uncheckAllButton.click();
       break;
+    case "Delete Selected":
+      listOfAllOrdersPage.deleteSelectedButton.click();
   }
   }
 
@@ -106,5 +109,71 @@ Assert.assertFalse(checkBox.isSelected());
     for(WebElement checkBox: listOfAllOrdersPage.checkBoxes){
       Assert.assertFalse(checkBox.isSelected());
     }
+  }
+
+  @When("user clicks on {string} menu item")
+  public void userClicksOnMenuItem(String ordersMenu) {
+    switch (ordersMenu) {
+      case "Orders":
+        for (int i = 0; i < listOfAllOrdersPage.webOrdersMenu.size(); i++) {
+          listOfAllOrdersPage.webOrdersMenu.get(i).click();
+        }
+        break;
+      case "View all orders":
+        listOfAllOrdersPage.viewAllOrdersButton.click();
+         break;
+    }
+  }
+  @And("user selects {string} as product")
+  public void userSelectsAsProduct(String familyAlbum) {
+    DropDownHandler.selectOptionByValue(listOfAllOrdersPage.familyAlbumDropdown, familyAlbum);
+  }
+
+  @And("user enters {int} as quantity")
+  public void userEntersAsQuantity(int number) {
+    listOfAllOrdersPage.quantityInputBox.sendKeys(String.valueOf(number));
+  }
+
+  @And("user enters all address information")
+  public void userEntersAllAddressInformation() {
+  listOfAllOrdersPage.customerNameInputBox.sendKeys("Nataliia Grynda");
+  listOfAllOrdersPage.streetInputBox.sendKeys("6126 W Henderson St");
+  listOfAllOrdersPage.cityInputBox.sendKeys("Chicago");
+  listOfAllOrdersPage.stateInputBox.sendKeys("Illinois");
+  listOfAllOrdersPage.zipInputBox.sendKeys("60634");
+  }
+
+  @And("user enters all payment information")
+  public void userEntersAllPaymentInformation() {
+    listOfAllOrdersPage.cardInformation.click();
+    listOfAllOrdersPage.cardNumberInputBox.sendKeys("1234123456785678");
+    listOfAllOrdersPage.expireInputBox.sendKeys("04/25");
+    listOfAllOrdersPage.processButton.click();
+
+  }
+
+  @Then("user should see their order displayed in the {string} table")
+  public void userShouldSeeTheirOrderDisplayedInTheTable(String myOrder) {
+   for(int i = 0; i < listOfAllOrdersPage.listOfAllMyOrders.size();i++){
+     Assert.assertEquals(myOrder, listOfAllOrdersPage.listOfAllMyOrders.get(i).isDisplayed());
+   }
+  }
+
+  @And("validate all information entered displayed correct with the order")
+  public void validateAllInformationEnteredDisplayedCorrectWithTheOrder(DataTable dataTable) {
+  for(int i = 0; i < listOfAllOrdersPage.listOfAllMyOrders.size();i++ ){
+    Assert.assertEquals(dataTable.asList().get(i), listOfAllOrdersPage.listOfAllMyOrders.get(i).getText());
+  }
+  }
+
+  @Then("validate all orders are deleted from the {string}")
+  public void validateAllOrdersAreDeletedFromThe(String allOrders) {
+  Assert.assertNotNull(allOrders);
+
+  }
+
+  @And("validate user sees {string} Message")
+  public void validateUserSeesMessage(String listOfOrdersIsEmpty) {
+   Assert.assertEquals(listOfOrdersIsEmpty, listOfAllOrdersPage.listOfOrdersIsEmptyMessage.getText());
   }
 }
